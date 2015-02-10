@@ -34,7 +34,7 @@ Stylesheet = ->
 # Add a CSS rule to the stylesheet
 Stylesheet::rule = (selector, key, value) ->
   # check if the selector is already in the stylesheet
-  idx = Array.map(@sheet.cssRules, (rule) -> rule.selectorText).indexOf(selector)
+  idx = _.map(@sheet.cssRules, (rule) -> rule.selectorText).indexOf(selector)
   # else make a new rule
   unless idx >= 0
     idx = @sheet.insertRule("#{selector} {}", 0)
