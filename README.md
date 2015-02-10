@@ -2,6 +2,12 @@
 
 This package allows you to define all your CSS rules in a Javascript or Coffeescript and with reactive bindings to Tracker-aware functions.
 
+Check out the [live demo](http://reactive-css.meteor.com). It demonstrates:
+
+- reactive-responsive deisgn: changes layout when window resizes
+- reactively updating color scheme
+- platform-specific css for Android vs iOS
+
 ## Getting Started
 
     meteor add ccorcos:reactive-css

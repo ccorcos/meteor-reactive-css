@@ -1,4 +1,8 @@
 
+isString = (value) -> (typeof value == 'string')
+capitalize = (string) -> string and (string.charAt(0).toUpperCase() + string.slice(1))
+
+
 # parse curried arguments for single units if necessary
 # default px
 argsToUnits = (args...) ->
@@ -17,6 +21,10 @@ simpleMixins = [
   'color'
   'backgroundColor'
   'position'
+  'overflow'
+  'overflowX'
+  'overflowY'
+  'margin'
 ]
 
 simplePrefixMixins = [
@@ -30,7 +38,11 @@ simplePrefixMixins = [
 # but it could be px, em, %, etc.
 oneUnitMixins = [
   'height'
+  'maxHeight'
+  'minHeight'
   'width'
+  'maxWidth'
+  'minWidth'
   'paddingTop'
   'paddingBottom'
   'paddingRight'
@@ -44,6 +56,7 @@ oneUnitMixins = [
   'left'
   'right'
   'lineHeight'
+  'fontSize'
 ]
 
 oneUnitPrefixMixins = [

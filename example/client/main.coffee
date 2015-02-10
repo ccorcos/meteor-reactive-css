@@ -1,100 +1,154 @@
-# Rotate about the cubehelix
+# Define some styles
+@styles = new ReactiveDict()
+styles.set 'navHeightpx', 90
+styles.set 'toolbarHeightpx', 50
+styles.set 'contentMaxWidthem', 40
+
+# reactive sizing
+adjustSize = ->
+  width = window.innerWidth
+  height = window.innerHeight
+  styles.set 'size.width', width
+  styles.set 'size.height', height
+  if width < 1200
+    styles.set 'size', 'mobile'
+  else
+    styles.set 'size', 'desktop'
+
+adjustSize()
+window.addEventListener "resize", adjustSize
+
+# React to Andoid vs iOS
+ios = !!navigator.userAgent.match(/iPad/i) or !!navigator.userAgent.match(/iPhone/i) or !!navigator.userAgent.match(/iPod/i)
+android = navigator.userAgent.indexOf('Android') > 0
+
+styles.set 'platform', do ->
+  if ios then return 'ios'
+  if android then return 'android'
+  return 'desktop'
+
+
+# Using D3 to define an HCL color interpolation
+@color = d3.scale.linear()
+  .domain([0,1])
+  .range(["#F3F983", "#373A49"])
+  .interpolate(d3.interpolateHcl);
+
+# Rotate the color scheme with a reactive var and a setInterval
 @rotate = new ReactiveVar(0.0)
 
-# cubehelix = d3.scale.cubehelix()
-cubehelix = d3.scale.cubehelix().range([d3.hsl(270, .75, .35), d3.hsl(70, 1.5, .8)])
+desaturate = (x) ->
+  c = d3.hcl(x)
+  c.c *= 0.7
+  return c.toString()
 
-cube = (x) ->
-  r = rotate.get()
-  v = (r+x) % 1.0
-  # if v > 1.0 then v = 2.0 - v
-  return cubehelix(v)
+lighten = (x) ->
+  c = d3.hcl(x)
+  c.l /= 0.7
+  return c.toString()
 
-# Theme
-@themes = new ReactiveDict()
+darken = (x) ->
+  c = d3.hcl(x)
+  c.l *= 0.7
+  return c.toString()
+
 Tracker.autorun ->
-  themes.set 'dark.background', cube 0.3 #'#151515'
-  themes.set 'dark.foreground', cube 0.1 #'#0c0c0c'
-  themes.set 'dark.text',       cube 0.8 #'#dddddd'
-  themes.set 'dark.primary',    cube 0.4 #'#4d91ea'
-  themes.set 'dark.secondary',  cube 0.5 #'#8ee478'
-  themes.set 'dark.tertiary',   cube 0.6 #'#cf0033'
+  r = rotate.get()
+  styles.set 'primary',   color(2/6 + r)
+  styles.set 'secondary', color(1/6 + r)
+  styles.set 'tertiary',  color(0/6 + r)
+  styles.set 'primary.text',   lighten(desaturate(color(0/6+r)))
+  styles.set 'secondary.text', lighten(desaturate(color(0/6+r)))
+  styles.set 'tertiary.text',  darken(desaturate(color(2/6+r)))
+
+inc = 1/6/10
+rotateColors = ->
+  r = rotate.get()
+  if r+inc+2/6 >= 1.0
+    inc *= -1
+  else if r+inc <= 0
+    inc *= -1
+  r += inc
+  rotate.set(r)
+
+Meteor.setInterval(rotateColors, '100')
 
 
-# App Parameterized Styles
-@styles = new ReactiveDict()
-styles.setDefault 'nav.heightpx', 90
-styles.setDefault 'sidebar.widthem', 10
+# Define all the styles
+css '*': css.boxSizing('border-box')
 
-
-theme = (str) -> themes.get "dark.#{str}"
-style = (str) -> styles.get str
-
-
-css 
-  '*': css.boxSizing('border-box')
-
-css('html body')
+page = css('.page')
   .fp()
-  .c -> theme('text')
-  .bg -> theme('background')
-  .np()
-  .nm()
+  .bg -> styles.get('tertiary')
+  .c -> styles.get('tertiary.text')
 
-css
-  '.nav':
-    'color': -> theme('primary')
-    'backgroundColor': -> theme('foreground')
-    'widthpc': 100
-    'heightpx': -> style('nav.heightpx')
-    '.title':
-      'paddingLeftem': 0.5
-      'paddingRightem': 0.5
-      'lineHeightpx': -> style('nav.heightpx')
-      'fontSizeem': 2.5
+nav = css('.nav')
+  .w 100, 'pc'
+  .h 'px',  -> styles.get('navHeightpx')
+  .bg -> styles.get('primary')
+  .c -> styles.get('primary.text')
 
-css
-  '#slider':
-    'position': 'absolute'
-    'rightem': 1
-    'leftem': 20
-    'topem': 2.3
 
-css
-  '.content':
-    'position': 'absolute'
-    'toppx': -> style 'nav.heightpx'
-    'bottom': 0
-    'right': 0
-    'leftem': -> style 'sidebar.widthem'
-    'paddingem': 0.5
-    'color': -> theme('tertiary')
-    
-@sidebar = css('.sidebar')
-  .pr(0.7, 'em').pl(0.7, 'em')
-  .w 'em', -> style('sidebar.widthem')
+title = nav.child('.title')
+  .w 100, 'pc'
+  .h styles.get('navHeightpx')
+  .lineHeight styles.get('navHeightpx')
+  .fontSize 2, 'em'
+  .c -> styles.get('primary.text')
+
+# Make this whole chunk reactive
+# Android titles pull left, while iOS is centered
+Tracker.autorun ->
+  if styles.equals('platform', 'android')
+    title
+      .pl 10, 'px'
+      .margin 'auto'
+      .textAlign 'left'
+  else
+    title
+      .margin '0 auto'
+      .pl 0
+      .textAlign 'center'
+
+content = css('.content')
   .position 'absolute'
-  .top 'px', -> style 'nav.heightpx'
-  .bottom 0
+  .top -> styles.get('navHeightpx')
+  .pt 10, 'px'
+  .bottom 'px', -> 
+    if styles.equals('size','mobile')
+      return styles.get('toolbarHeightpx')
+    else
+      return 0
+  .pb 10, 'px'
+  .pl 10
+  .pr 10
   .left 0
+  .right 0
+  .overflowY 'scroll'
+  .maxWidth 'em', -> styles.get('contentMaxWidthem')
+  .margin '0 auto'
 
-item = sidebar.child('.item').borderRadius('0.5em').rules
-  'color': -> theme('background')
-  'backgroundColor': -> theme('secondary')
-  'height': '2em'
-  'lineHeight': '2em'
-  'textAlign': 'center'
-  'fontSizeem': 1.25
-  'margin': '1em 0em'
+toolbar = css('.toolbar')
+  .position('absolute')
+  .bg -> styles.get('secondary')
+  .c -> styles.get('secondary.text')
 
-
-Template.main.rendered = ->
-  $("#slider").noUiSlider({
-    start: 0.0,
-    range: {
-      'min': 0.0,
-      'max': 1.0
-    }
-  }).on 'slide', (x) ->
-    rotate.set(parseFloat($(this).val()))
-
+# On a larger layout, pull the toolbar to the left
+Tracker.autorun ->
+  device = styles.get('size')
+  if device is 'mobile'
+    toolbar
+      .bottom 0
+      .height styles.get('toolbarHeightpx')
+      .left 0
+      .right 0
+      .top 'auto'
+      .w 100, 'pc'
+  else
+    toolbar
+      .height 'auto'
+      .left "calc(50% - #{styles.get('contentMaxWidthem')/2}em - 210px)"
+      .right 'auto'
+      .width 200
+      .top styles.get('navHeightpx') + 10
+      .bottom styles.get('toolbarHeightpx')

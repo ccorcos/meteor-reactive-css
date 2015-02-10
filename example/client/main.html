@@ -3,31 +3,31 @@
 </body>
 
 <template name="main">
+  <div class="page">
+    {{>nav}}
+    {{>content}}
+    {{>toolbar}}
+  </div>
+</template>
+
+<template name="nav">
   <div class="nav">
     <div class="title">
-      Fuck This Shit
+      Reactive CSS
     </div>
-    <div id="slider"></div>
   </div>
-  <div class="sidebar">
-    <div class="item">Go</div>
-    <div class="item">Fuck</div>
-    <div class="item">Your</div>
-    <div class="item">Self</div>
-  </div>
-  <div class="content">
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+</template>
 
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<template name="content">
+  <div class="content">
+    <p>This Meteor app is built with <a href="https://github.com/ccorcos/meteor-reactive-css">Reactive CSS</a></p>
+    <p>Resize the window and see some *reactive* responsive design at work.</p>
+    <p>Wait a little bit and you'll also notice the color scheme changing slowly over time.</p>
+  </div>
+</template>
+
+<template name="toolbar">
+  <div class="toolbar">
+    toolbar items...
   </div>
 </template>
