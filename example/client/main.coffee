@@ -27,12 +27,16 @@ styles.set 'platform', do ->
   if android then return 'android'
   return 'desktop'
 
-
 # Using D3 to define an HCL color interpolation
 @color = d3.scale.linear()
   .domain([0,1])
   .range(["#F3F983", "#373A49"])
   .interpolate(d3.interpolateHcl);
+
+# @color = d3.scale.linear()
+#   .domain([0,1])
+#   .range(["#4D261F","#573649","#395267","#206B5D","#5E793B","#A97839"])
+#   .interpolate(d3.interpolateHcl);
 
 # Rotate the color scheme with a reactive var and a setInterval
 @rotate = new ReactiveVar(0.0)

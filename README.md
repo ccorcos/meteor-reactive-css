@@ -195,7 +195,7 @@ Pros
 
 Cons
 
-- Browsers cannot you CSS stylesheets. 
+- Browsers cannot cache your CSS stylesheets. 
 - `Tracker.autorun` everywhere, but wait, you don't have to use it.
 
 I think its worth it. I hate "battling the framework" when it comes to CSS.
