@@ -101,13 +101,14 @@ css.nested = (obj, selector="") ->
       rule(selector, key, value)
 
     else if isPlainObject(value)
+      nextSelector = ""
       if selector is ""
-        selector = key
+        nextSelector = key
       else if key[0] is '&'
-        selector = "#{selector}#{key}"
+        nextSelector = "#{selector}#{key}"
       else
-        selector = "#{selector} #{key}"
-      css.nested(value, selector)
+        nextSelector = "#{selector} #{key}"
+      css.nested(value, nextSelector)
 
     else if isFunction(value)
       do (key, value) ->
