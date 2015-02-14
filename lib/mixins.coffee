@@ -25,6 +25,16 @@ simpleMixins = [
   'overflowX'
   'overflowY'
   'margin'
+  'zIndex'
+  'fontWeight'
+  'fontFamily'
+  'textOverflow'
+  'borderStyle'
+  'cursor'
+  'textDecoration'
+  'borderColor'
+  'borderLeft'
+  'borderRight'
 ]
 
 simplePrefixMixins = [
@@ -32,6 +42,7 @@ simplePrefixMixins = [
   'userSelect'
   'opacity'
   'textAlign'
+  'transform'
 ]
 
 # one unit meaning theres only one posisble value input
@@ -57,6 +68,8 @@ oneUnitMixins = [
   'right'
   'lineHeight'
   'fontSize'
+  'padding'
+  'borderWidth'
 ]
 
 oneUnitPrefixMixins = [
