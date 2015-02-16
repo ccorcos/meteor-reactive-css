@@ -76,9 +76,10 @@ rule = (args...) -> stylesheet.rule.apply(stylesheet, args)
 #   object: then parse out the nested CSS rules
 #   string: set the selector and the prototype function create rules on that selector
 @css = (input) ->
+  # safeguard so you dont have to use new
+  if not (this instanceof css) then return new css(input)
+  @autoruns = []
   if isString(input)
-    # safeguard so you dont have to use new
-    if not (this instanceof css) then return new css(input)
     @selector = input
     return this
   else if isPlainObject(input)
@@ -89,7 +90,7 @@ rule = (args...) -> stylesheet.rule.apply(stylesheet, args)
     return
 
 # Recursively parse a nested object of CSS rules
-css.nested = (obj, selector="") ->
+css::nested = (obj, selector="") ->
   for key, value of obj
     # if its a string, then its a CSS rule
     # if its an object, then recursively update the selector
@@ -112,7 +113,7 @@ css.nested = (obj, selector="") ->
 
     else if isFunction(value)
       do (key, value) ->
-        Tracker.autorun -> 
+        @autoruns.push Tracker.autorun -> 
           rule(selector, key, value())
 
     else
@@ -133,7 +134,7 @@ css::rule = (name, value) ->
   if isFunction(value)
     self = this
     # run the function in a reactive context
-    Tracker.autorun -> 
+    @autoruns.push Tracker.autorun -> 
       rule(self.selector, name, value())  
   else
     rule(@selector, name, value)
@@ -142,6 +143,10 @@ css::rule = (name, value) ->
 css::rules = (obj) ->
   css.nested(obj, @selector)
 
+css::stop = ->
+  for autorun in @autoruns
+    autorun.stop()
+  return
 
 # define a method for creating mixins.
 css.mixin = (name, func) ->
@@ -158,7 +163,7 @@ css.mixin = (name, func) ->
         args.pop()
       # run the function in a reactive context
       f = args[0]
-      Tracker.autorun ->
+      @autoruns.push Tracker.autorun ->
         args[0] = f()
         obj = func.apply(self, args)
         for k, v of obj
