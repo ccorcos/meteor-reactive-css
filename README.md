@@ -202,4 +202,6 @@ I think its worth it. I hate "battling the framework" when it comes to CSS.
 
 ## To Do
 - tests
-- template-specific css using `Template.name.css(...)`. maybe give every template a class?
+- template-specific css using `Template.name.css(...)`.
+  - can we set inline styles using @find on created?
+  - we also need to stop all the associated autorun methods
