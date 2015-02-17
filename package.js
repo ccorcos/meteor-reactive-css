@@ -1,7 +1,7 @@
 Package.describe({
   name: 'ccorcos:reactive-css',
   summary: 'Define reactive CSS rules in Javascript or (preferably ;) Coffeescript.',
-  version: '1.0.3',
+  version: '1.0.4',
   git: 'https://github.com/ccorcos/meteor-reactive-css'
 });
 

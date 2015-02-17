@@ -83,7 +83,7 @@ rule = (args...) -> stylesheet.rule.apply(stylesheet, args)
     @selector = input
     return this
   else if isPlainObject(input)
-    css.nested(input)
+    @nested(input)
     return
   else
     console.log "WARNING CoffeeCSS: calling css() doesn't do anything.", input
@@ -109,7 +109,7 @@ css::nested = (obj, selector="") ->
         nextSelector = "#{selector}#{key}"
       else
         nextSelector = "#{selector} #{key}"
-      css.nested(value, nextSelector)
+      @nested(value, nextSelector)
 
     else if isFunction(value)
       do (key, value) ->
@@ -141,7 +141,7 @@ css::rule = (name, value) ->
   return this
 
 css::rules = (obj) ->
-  css.nested(obj, @selector)
+  @nested(obj, @selector)
 
 css::stop = ->
   for autorun in @autoruns
