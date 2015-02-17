@@ -91,6 +91,7 @@ rule = (args...) -> stylesheet.rule.apply(stylesheet, args)
 
 # Recursively parse a nested object of CSS rules
 css::nested = (obj, selector="") ->
+  self = this
   for key, value of obj
     # if its a string, then its a CSS rule
     # if its an object, then recursively update the selector
@@ -113,7 +114,7 @@ css::nested = (obj, selector="") ->
 
     else if isFunction(value)
       do (key, value) ->
-        @autoruns.push Tracker.autorun -> 
+        self.autoruns.push Tracker.autorun -> 
           rule(selector, key, value())
 
     else
